@@ -101,7 +101,7 @@ export default function Auth({ onAuthSuccess, defaultIsLogin = true }) {
 
   if (isVerifying) {
     title = 'Verify Email';
-    description = 'Enter the 6-digit OTP code sent to your email.';
+    description = 'Enter the 8-digit OTP code sent to your email.';
   } else if (isForgotPassword) {
     title = 'Reset Password';
     description = 'Enter your email address to receive a password reset code.';
@@ -181,11 +181,11 @@ export default function Auth({ onAuthSuccess, defaultIsLogin = true }) {
 
             {isVerifying && (
               <div className="space-y-2 text-left">
-                <Label htmlFor="otp">6-Digit Code</Label>
+                <Label htmlFor="otp">8-Digit Code</Label>
                 <Input
                   id="otp"
                   type="text"
-                  placeholder="123456"
+                  placeholder="12345678"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   required

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Download, Wand2, Plus, Trash2, Save, CheckCircle, AlertTriangle, ChevronDown, ChevronUp, GripVertical, Check, Mail, Phone, MapPin, Link, Loader2, FileText, ArrowLeft } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import html2pdf from 'html2pdf.js';
 import { supabase } from '../supabase';
 import { generateLatex } from '../utils/latexGenerator';
@@ -250,47 +251,44 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
     localStorage.setItem('resume_builder_data', JSON.stringify(resumeData));
   }, [resumeData]);
 
-  useEffect(() => {
+  const compileLatex = async () => {
     if (activeTemplate !== 'latex') return;
-
     setIsCompilingLatex(true);
     setLatexError(null);
-
-    const timeoutId = setTimeout(async () => {
-      try {
-        const texString = generateLatex(resumeData);
-
-        const formData = new FormData();
-        formData.append('filecontents', texString);
-
-        const response = await fetch('/api/compile-latex', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (response.ok) {
-          const blob = await response.blob();
-          if (blob.type === 'application/pdf') {
-            if (latexPdfUrl) URL.revokeObjectURL(latexPdfUrl);
-            const url = URL.createObjectURL(blob);
-            setLatexPdfUrl(url);
-          } else {
-            const text = await blob.text();
-            setLatexError('Compilation failed. Check input for invalid LaTeX characters.');
-            console.error('LaTeX Error:', text);
-          }
+    try {
+      const texString = generateLatex(resumeData);
+      const formData = new FormData();
+      formData.append('filecontents', texString);
+      const response = await fetch('/api/compile-latex', {
+        method: 'POST',
+        body: formData
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.type === 'application/pdf') {
+          if (latexPdfUrl) URL.revokeObjectURL(latexPdfUrl);
+          const url = URL.createObjectURL(blob);
+          setLatexPdfUrl(url);
         } else {
-          setLatexError('API Error: ' + response.statusText);
+          const text = await blob.text();
+          setLatexError('Compilation failed. Check input for invalid LaTeX characters.');
+          console.error('LaTeX Error:', text);
         }
-      } catch (error) {
-        setLatexError('Network Error: ' + error.message);
-      } finally {
-        setIsCompilingLatex(false);
+      } else {
+        setLatexError('API Error: ' + response.statusText);
       }
-    }, 1500);
+    } catch (error) {
+      setLatexError('Network Error: ' + error.message);
+    } finally {
+      setIsCompilingLatex(false);
+    }
+  };
 
-    return () => clearTimeout(timeoutId);
-  }, [resumeData, activeTemplate]);
+  useEffect(() => {
+    if (activeTemplate === 'latex' && !latexPdfUrl && !isCompilingLatex) {
+      compileLatex();
+    }
+  }, [activeTemplate]);
 
   // Removed auto-load from Supabase. New resumes should start fresh or from localStorage.
   // Saved resumes are loaded via the "My Resumes" screen instead.
@@ -443,6 +441,14 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
         [id]: !prev.sectionVisibility[id]
       }
     }));
+  };
+
+  const handleDragEnd = (result, section) => {
+    if (!result.destination) return;
+    const items = Array.from(resumeData[section] || []);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    setResumeData(prev => ({ ...prev, [section]: items }));
   };
 
   // --- AI Operations ---
@@ -703,14 +709,25 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                 </div>
                 <p className="wb-subtitle">List your work experience starting with the most recent position first.</p>
 
-                <div className="wb-accordion-list">
-                  {resumeData.experience.map(exp => {
-                    const isExpanded = expandedExpId === exp.id;
-                    return (
-                      <div key={exp.id} className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}>
-                        <div className="wb-acc-header" onClick={() => setExpandedExpId(isExpanded ? null : exp.id)}>
-                          <div className="wb-acc-title-area">
-                            <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                <DragDropContext onDragEnd={(res) => handleDragEnd(res, 'experience')}>
+                  <Droppable droppableId="experience-list">
+                    {(provided) => (
+                      <div className="wb-accordion-list" {...provided.droppableProps} ref={provided.innerRef}>
+                        {resumeData.experience.map((exp, index) => {
+                          const isExpanded = expandedExpId === exp.id;
+                          return (
+                            <Draggable key={exp.id} draggableId={exp.id} index={index}>
+                              {(provided) => (
+                                <div 
+                                  className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                >
+                                  <div className="wb-acc-header" onClick={() => setExpandedExpId(isExpanded ? null : exp.id)}>
+                                    <div className="wb-acc-title-area">
+                                      <div {...provided.dragHandleProps} style={{ display: 'flex', alignItems: 'center', padding: '4px' }}>
+                                        <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                                      </div>
                             <div>
                               <div className="wb-acc-title">{exp.title || '(Not specified)'}, {exp.company || 'Employer'}</div>
                               <div className="wb-acc-sub">{exp.startDate} {exp.startDate && exp.endDate ? '-' : ''} {exp.endDate}</div>
@@ -768,10 +785,16 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                             </div>
                           </div>
                         )}
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
                       </div>
-                    );
-                  })}
-                </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
                 <button className="wb-add-link" onClick={addExperience}><Plus size={16} /> Add work experience</button>
               </div>
             )}
@@ -785,14 +808,25 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                 </div>
                 <p className="wb-subtitle">A varied education on your resume sums up the value that your learnings and background will bring to job.</p>
 
-                <div className="wb-accordion-list">
-                  {resumeData.education.map(ed => {
-                    const isExpanded = expandedEdId === ed.id;
-                    return (
-                      <div key={ed.id} className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}>
-                        <div className="wb-acc-header" onClick={() => setExpandedEdId(isExpanded ? null : ed.id)}>
-                          <div className="wb-acc-title-area">
-                            <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                <DragDropContext onDragEnd={(res) => handleDragEnd(res, 'education')}>
+                  <Droppable droppableId="education-list">
+                    {(provided) => (
+                      <div className="wb-accordion-list" {...provided.droppableProps} ref={provided.innerRef}>
+                        {resumeData.education.map((ed, index) => {
+                          const isExpanded = expandedEdId === ed.id;
+                          return (
+                            <Draggable key={ed.id} draggableId={ed.id} index={index}>
+                              {(provided) => (
+                                <div 
+                                  className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                >
+                                  <div className="wb-acc-header" onClick={() => setExpandedEdId(isExpanded ? null : ed.id)}>
+                                    <div className="wb-acc-title-area">
+                                      <div {...provided.dragHandleProps} style={{ display: 'flex', alignItems: 'center', padding: '4px' }}>
+                                        <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                                      </div>
                             <div>
                               <div className="wb-acc-title">{ed.degree || '(Not specified)'}, {ed.school || 'School'}</div>
                               <div className="wb-acc-sub">{ed.startDate} {ed.startDate && ed.endDate ? '-' : ''} {ed.endDate}</div>
@@ -833,10 +867,16 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                             </div>
                           </div>
                         )}
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
                       </div>
-                    );
-                  })}
-                </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
                 <button className="wb-add-link" onClick={addEducation}><Plus size={16} /> Add education</button>
               </div>
             )}
@@ -945,14 +985,25 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                 </div>
                 <p className="wb-subtitle">Highlight your best projects that showcase your technical skills and problem-solving abilities.</p>
 
-                <div className="wb-accordion-list">
-                  {resumeData.projects.map(proj => {
-                    const isExpanded = expandedProjId === proj.id;
-                    return (
-                      <div key={proj.id} className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}>
-                        <div className="wb-acc-header" onClick={() => setExpandedProjId(isExpanded ? null : proj.id)}>
-                          <div className="wb-acc-title-area">
-                            <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                <DragDropContext onDragEnd={(res) => handleDragEnd(res, 'projects')}>
+                  <Droppable droppableId="projects-list">
+                    {(provided) => (
+                      <div className="wb-accordion-list" {...provided.droppableProps} ref={provided.innerRef}>
+                        {resumeData.projects.map((proj, index) => {
+                          const isExpanded = expandedProjId === proj.id;
+                          return (
+                            <Draggable key={proj.id} draggableId={proj.id} index={index}>
+                              {(provided) => (
+                                <div 
+                                  className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                >
+                                  <div className="wb-acc-header" onClick={() => setExpandedProjId(isExpanded ? null : proj.id)}>
+                                    <div className="wb-acc-title-area">
+                                      <div {...provided.dragHandleProps} style={{ display: 'flex', alignItems: 'center', padding: '4px' }}>
+                                        <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                                      </div>
                             <div>
                               <div className="wb-acc-title">{proj.title || '(Not specified)'}</div>
                               <div className="wb-acc-sub">{proj.startDate} {proj.startDate && proj.endDate ? '-' : ''} {proj.endDate}</div>
@@ -1008,10 +1059,16 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                             </div>
                           </div>
                         )}
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
                       </div>
-                    );
-                  })}
-                </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
                 <button className="wb-add-link" onClick={addProject}><Plus size={16} /> Add project</button>
               </div>
             )}
@@ -1026,14 +1083,25 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                 </div>
                 <p className="wb-subtitle">Add your relevant certifications and their valid links.</p>
 
-                <div className="wb-accordion-list">
-                  {resumeData.certifications?.map(cert => {
-                    const isExpanded = expandedCertId === cert.id;
-                    return (
-                      <div key={cert.id} className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}>
-                        <div className="wb-acc-header" onClick={() => setExpandedCertId(isExpanded ? null : cert.id)}>
-                          <div className="wb-acc-title-area">
-                            <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                <DragDropContext onDragEnd={(res) => handleDragEnd(res, 'certifications')}>
+                  <Droppable droppableId="certifications-list">
+                    {(provided) => (
+                      <div className="wb-accordion-list" {...provided.droppableProps} ref={provided.innerRef}>
+                        {resumeData.certifications?.map((cert, index) => {
+                          const isExpanded = expandedCertId === cert.id;
+                          return (
+                            <Draggable key={cert.id} draggableId={cert.id} index={index}>
+                              {(provided) => (
+                                <div 
+                                  className={`wb-accordion-item ${isExpanded ? 'active' : ''}`}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                >
+                                  <div className="wb-acc-header" onClick={() => setExpandedCertId(isExpanded ? null : cert.id)}>
+                                    <div className="wb-acc-title-area">
+                                      <div {...provided.dragHandleProps} style={{ display: 'flex', alignItems: 'center', padding: '4px' }}>
+                                        <GripVertical size={16} color="#cbd5e0" className="drag-handle" />
+                                      </div>
                             <div>
                               <div className="wb-acc-title">{cert.name || '(Not specified)'}</div>
                             </div>
@@ -1061,10 +1129,16 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                             </div>
                           </div>
                         )}
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
                       </div>
-                    );
-                  })}
-                </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
                 <button className="wb-add-link" onClick={addCertification}><Plus size={16} /> Add certification</button>
               </div>
             )}
@@ -1396,12 +1470,24 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
             </div>
           </div>
         ) : activeTemplate === 'latex' ? (
-          <div className="template-latex-iframe" style={{ width: '100%', height: '100%', flex: 1, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            {isCompilingLatex && (
-              <div style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(0,0,0,0.7)', color: 'white', padding: '5px 10px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 5, zIndex: 10 }}>
-                <Loader2 size={14} className="animate-spin" /> Compiling LaTeX...
-              </div>
-            )}
+          <div className="template-latex-iframe" style={{ width: '100%', height: '100%', flex: 1, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 20 }}>
+              <button 
+                onClick={compileLatex} 
+                disabled={isCompilingLatex}
+                style={{
+                  background: '#0f172a', color: 'white', border: 'none', borderRadius: '6px',
+                  padding: '6px 12px', fontSize: '0.8rem', fontWeight: 500, cursor: isCompilingLatex ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                  opacity: isCompilingLatex ? 0.8 : 1,
+                  transition: 'opacity 0.2s'
+                }}
+              >
+                {isCompilingLatex ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
+                {isCompilingLatex ? 'Compiling...' : 'Compile Preview'}
+              </button>
+            </div>
             {latexError && (
               <div style={{ padding: 20, color: 'red', textAlign: 'center' }}>
                 <strong>Error:</strong> {latexError}
@@ -1411,7 +1497,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
               <iframe src={`${latexPdfUrl}#toolbar=0&navpanes=0`} style={{ width: '100%', height: '100%', border: 'none' }} title="LaTeX PDF Preview" />
             ) : !latexError ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>
-                Generating initial preview...
+                Click "Compile Preview" to generate your LaTeX resume.
               </div>
             ) : null}
           </div>

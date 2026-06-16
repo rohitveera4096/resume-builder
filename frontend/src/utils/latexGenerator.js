@@ -30,7 +30,7 @@ export const generateLatex = (resumeData) => {
     const val = resumeData.personal.github.trim();
     if (val) {
       githubUrl = val.startsWith('http') ? val : `https://${val}`;
-      githubUser = val.split('/').filter(Boolean).pop() || val;
+      githubUser = resumeData.personal.githubName ? resumeData.personal.githubName.trim() : (val.split('/').filter(Boolean).pop() || val);
     } else {
       githubUser = '';
       githubUrl = '';
@@ -58,7 +58,7 @@ export const generateLatex = (resumeData) => {
         });
       } else {
         linkedinUrl = val.startsWith('http') ? val : `https://${val}`;
-        linkedinName = val.split('/').filter(Boolean).pop() || val;
+        linkedinName = resumeData.personal.linkedinName ? resumeData.personal.linkedinName.trim() : (val.split('/').filter(Boolean).pop() || val);
       }
     } else {
       linkedinName = '';

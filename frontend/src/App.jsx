@@ -51,6 +51,7 @@ function App() {
 
   const handleTemplateSelection = (templateId) => {
     localStorage.setItem('selected_template', templateId);
+    localStorage.removeItem('resume_builder_data');
     setChosenTemplate(templateId);
     setParsedData(null);
     setInitialId(null);

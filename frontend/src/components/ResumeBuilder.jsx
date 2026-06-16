@@ -70,23 +70,39 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
     // Try to load saved data from localStorage first
     const savedData = localStorage.getItem('resume_builder_data');
     let data = initialData || (savedData ? JSON.parse(savedData) : null) || {
-      personal: { firstName: 'Rohit', lastName: 'Basava Satya Veera', email: 'veerarohit789@gmail.com', phone: '+91 8074744186', linkedin: 'linkedin.com/in/rohitveera4096', github: 'github.com/rohitveera4096' },
-      availability: { internshipType: 'Software Engineering Intern (Explore Program)', startDate: 'As per program schedule', workMode: 'On-site / Hybrid (as required)' },
-      summary: 'Enthusiastic Computer Science student seeking a Frontend Developer Internship, skilled in HTML, CSS, JavaScript, MySQL, and UI/UX design with Figma. I use AI tools to speed up development, debug efficiently, and build quick prototypes. Eager to contribute to responsive, user-friendly interfaces and ready to quickly learn any skills the organization needs.',
+      personal: { firstName: 'Eswara', lastName: 'Sai Veera', email: 'eswarsaiveera@gmail.com', phone: '+91 6309746112', linkedin: 'https://www.linkedin.com/in/eswara-sai-veera-66a121236', linkedinName: 'Eswara Sai Veera', github: 'https://github.com/EswarSaiVeera', githubName: 'EswarSaiVeera' },
+      availability: { internshipType: '', startDate: '', workMode: '' },
+      summary: 'An aspiring Computer Science student seeking an entry-level position at a software Company. I am eager to contribute to impactful projects using my skills in Python, Java, and SQL. I am particularly interested in working on projects related to Web Development, Artificial Intelligence and Machine Learning.',
       experience: [
-        { id: '1', title: 'Social Media Manager', company: 'IBM Quantum Qiskit Fall Fest 2025', location: '', startDate: 'Oct 2025', endDate: '', description: 'Led social media and post-production for Qiskit Fall Fest 2025, managing a cross-functional media team to deliver promotional content, live coverage, and event recaps. Streamlined workflows, coordinated with organizers and technical teams, and improved efficiency through clear checkpoints and review cycles, resulting in stronger engagement and a cohesive digital presence.' },
-        { id: '2', title: 'GDSC Member', company: 'Google Developer Student Clubs', location: '', startDate: 'Oct 2023', endDate: 'Sep 2024', description: 'Participated in developer events and hands-on coding workshops focused on web development and software engineering. Built teamwork, communication, and problem-solving skills through collaborative mini-projects, while gaining experience with Google technologies, frontend practices, and modern developer workflows.' },
-        { id: '3', title: 'Personal Portfolio', company: 'Project', location: '', startDate: 'Aug 2025', endDate: '', description: 'Created a personal portfolio website using HTML, CSS, and JavaScript to showcase projects, skills, and achievements.' },
-        { id: '4', title: 'Prompt Optimizer', company: 'Project', location: '', startDate: 'Sep 2025', endDate: '', description: 'A web tool that enhances user prompts into clearer, more effective versions across different styles. Designed a clean, responsive UI and integrated efficient prompt-refinement logic to improve AI workflow quality and user productivity.' },
-        { id: '5', title: 'Alumni DataBase', company: 'Project', location: '', startDate: 'Oct 2025', endDate: '', description: 'A web platform for students and alumni featuring dashboards, networking tools, job/event listings, and real-time updates. Integrated AI features like resume optimization, career path guidance, and sample interviews. Developed using frontend technologies and Firebase.' },
-        { id: '6', title: 'Ayur-Link', company: 'Project', location: '', startDate: 'Oct 2025', endDate: '', description: 'AI-driven prototype that translates Ayurvedic medical terms into modern/English medical codes using NLP, FastAPI, MongoDB, and WHO standards. Enables accurate, fast, and interoperable terminology mapping for hospitals and EMR systems.' }
+        { id: '1', title: 'Data Engineer', company: 'Edubot, Vijayawada, AP.', location: '', startDate: 'May 2024', endDate: 'June 2024', description: 'Developed a Console based application using Python and Postgresql, Participated in code reviews, Gained hands-on experience with version control using Git.' }
       ],
       education: [
-        { id: '1', school: 'RGUKT, Srikakulam', degree: 'B.Tech, CSE', cgpa: '9.1', startDate: '2024', endDate: '2028' },
-        { id: '2', school: 'RGUKT, Srikakulam', degree: 'Pre University Course', cgpa: '9.2', startDate: '2022', endDate: '2024' },
-        { id: '3', school: 'ZPPH School, Valluru', degree: 'Class 10th', cgpa: '9.4', startDate: '2021', endDate: '2022' }
+        { id: '1', school: 'RGUKT, Nuzvid', degree: 'B.Tech, CSE', cgpa: '8.53', startDate: '2021', endDate: '2025' },
+        { id: '2', school: 'RGUKT, Nuzvid', degree: 'Pre University Course', cgpa: '9.37', startDate: '2019', endDate: '2021' },
+        { id: '3', school: 'ZPPH School , Valluru, East Godavari District', degree: 'Class 10th', cgpa: '10.0', startDate: '2018', endDate: '2019' }
       ],
-      skills: 'Languages: Python, Java, JavaScript, SQL\nWeb Technologies: HTML5, CSS3, Responsive Web Design, UI/UX Principles, Wireframing, Prototyping, Basic API Integration\nTools: Git and GitHub, Figma, Chrome DevTools, Firebase (Auth and Realtime DB), AI Development Tools\nSoft Skills: Problem Solving, Communication, Team Coordination, and Adaptability'
+      projects: [
+        { id: 'p1', title: 'Time Table Manager', location: '', startDate: '2023', endDate: '', description: 'This web application is useful for managing the timetables in colleges or academic instutes by providing information about the leisure periods and whether the class is going on at the given point of time or not. It consists of HTML,CSS,JS technologies.' },
+        { id: 'p2', title: 'CertiFier', location: '', startDate: 'Feb 2024', endDate: 'May 2024', description: 'Created a decentralized NFT Marketplace called CertiFier using Solidity and React. Developed smart contracts for minting NFTs, ensuring maximum security. Deployed the application using Hardhat.' },
+        { id: 'p3', title: 'Student Stress Prediction and Health Risk Detection', location: '', startDate: 'April 2025', endDate: '', description: 'Student health risks are concerned more these days so using Machine Learning techniques like SVMs, Random Forests etc. We are trying to predict the Stress level of a student to identify the Health risks thereby suggesting the measures to reduce it.' }
+      ],
+      skills: 'Programming Languages: Python, C, Java, SQL and Solidity Basics\nWeb Technologies: HTML, CSS, JavaScript\nDatabases: MySQL\nTools: Git and GitHub, AWS Basics\nSoft Skills: Problem Solving, Communication, Time Management and Adaptability',
+      certifications: [
+        { id: 'c1', name: 'Supervised Machine Learning: Regression and Classification', link: 'https://coursera.org/share/40a8ef328e897eddf7de130728ec5998' },
+        { id: 'c2', name: 'Advanced Learning Algorithms', link: 'https://coursera.org/share/d9427caa496cbb190e7937f85995b020' },
+        { id: 'c3', name: 'Unsupervised Learning, Recommenders, Reinforcement Learning', link: 'https://coursera.org/share/f71875eec24cb26a05eb170c45c1359e' }
+      ],
+      sectionTitles: {
+        objective: 'Objective',
+        education: 'Education',
+        skills: 'Skills',
+        projects: 'Projects',
+        experience: 'Internships',
+        certifications: 'Certifications',
+        availability: 'Availability'
+      },
+      sectionOrder: ['objective', 'education', 'skills', 'projects', 'experience', 'certifications', 'availability'],
+      sectionVisibility: { objective: true, education: true, skills: true, projects: true, experience: true, certifications: true, availability: false }
     };
 
     // Convert skills array to string if needed
@@ -276,30 +292,8 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
     return () => clearTimeout(timeoutId);
   }, [resumeData, activeTemplate]);
 
-  // Load resume from Supabase on mount
-  useEffect(() => {
-    const fetchResume = async () => {
-      if (session && session.user && !initialData) {
-        try {
-          const { data, error } = await supabase
-            .from('resumes')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .order('created_at', { ascending: false })
-            .limit(1);
-
-          if (data && data.length > 0 && data[0].resume_data) {
-            setResumeId(data[0].id);
-            setProjectName(data[0].title);
-            setResumeData(data[0].resume_data);
-          }
-        } catch (e) {
-          console.error("Failed to fetch saved resume:", e);
-        }
-      }
-    };
-    fetchResume();
-  }, [session, initialData]);
+  // Removed auto-load from Supabase. New resumes should start fresh or from localStorage.
+  // Saved resumes are loaded via the "My Resumes" screen instead.
 
   // Synchronize activeTemplate with initialTemplate when the selected template prop changes
   useEffect(() => {
@@ -344,7 +338,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
       const data = await response.json();
       setAtsResult(data);
     } catch (err) {
-      setAtsError('Failed to analyze resume. Is the backend running?');
+      setAtsError('Our servers are currently experiencing high demand. Please try again later.');
     } finally {
       setAtsLoading(false);
     }
@@ -666,16 +660,28 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                   </div>
                 </div>
                 {activeTemplate === 'latex' ? (
-                  <div className="form-row">
-                    <div className="form-group wb-floating-group">
-                      <label>LinkedIn Profile</label>
-                      <input type="text" value={resumeData.personal.linkedin || ''} onChange={e => updatePersonal('linkedin', e.target.value)} placeholder="e.g. linkedin.com/in/username" />
+                  <>
+                    <div className="form-row">
+                      <div className="form-group wb-floating-group">
+                        <label>LinkedIn URL</label>
+                        <input type="text" value={resumeData.personal.linkedin || ''} onChange={e => updatePersonal('linkedin', e.target.value)} placeholder="https://..." />
+                      </div>
+                      <div className="form-group wb-floating-group">
+                        <label>LinkedIn Display Name</label>
+                        <input type="text" value={resumeData.personal.linkedinName || ''} onChange={e => updatePersonal('linkedinName', e.target.value)} placeholder="e.g. Eswara Sai Veera" />
+                      </div>
                     </div>
-                    <div className="form-group wb-floating-group">
-                      <label>GitHub Profile</label>
-                      <input type="text" value={resumeData.personal.github || ''} onChange={e => updatePersonal('github', e.target.value)} placeholder="e.g. github.com/username" />
+                    <div className="form-row">
+                      <div className="form-group wb-floating-group">
+                        <label>GitHub URL</label>
+                        <input type="text" value={resumeData.personal.github || ''} onChange={e => updatePersonal('github', e.target.value)} placeholder="https://..." />
+                      </div>
+                      <div className="form-group wb-floating-group">
+                        <label>GitHub Display Name</label>
+                        <input type="text" value={resumeData.personal.githubName || ''} onChange={e => updatePersonal('githubName', e.target.value)} placeholder="e.g. EswarSaiVeera" />
+                      </div>
                     </div>
-                  </div>
+                  </>
                 ) : (
                   <div className="form-group wb-floating-group">
                     <label>LinkedIn/Website URL</label>
@@ -840,7 +846,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
               <div className="wb-step-content fading-in">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
                   <h2 style={{ margin: 0 }}>Skills & Expertise</h2>
-                  <input type="text" value={resumeData.sectionTitles?.skills || ''} onChange={e => updateSectionTitle('skills', e.target.value)} placeholder="e.g. SKILLS" className="wb-section-title-input" />
+                  <input type="text" value={resumeData.sectionTitles?.skills || ''} onChange={e => updateSectionTitle('skills', e.target.value)} placeholder="e.g. SKILLS" className="wb-section-title-input" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem', border: '1px solid #e2e8f0', borderRadius: '6px', fontWeight: 600, color: '#4a5568', width: '150px' }} />
                 </div>
                 <p className="wb-subtitle">Organize your skills into categories. Type a skill and press Enter or Comma to add it.</p>
                 <div className="skills-editor">
@@ -1069,7 +1075,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
               <div className="wb-step-content fading-in">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
                   <h2 style={{ margin: 0 }}>Availability</h2>
-                  <input type="text" value={resumeData.sectionTitles?.availability || ''} onChange={e => updateSectionTitle('availability', e.target.value)} placeholder="e.g. AVAILABILITY" className="wb-section-title-input" />
+                  <input type="text" value={resumeData.sectionTitles?.availability || ''} onChange={e => updateSectionTitle('availability', e.target.value)} placeholder="e.g. AVAILABILITY" className="wb-section-title-input" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem', border: '1px solid #e2e8f0', borderRadius: '6px', fontWeight: 600, color: '#4a5568', width: '150px' }} />
                 </div>
                 <p className="wb-subtitle">Detail your availability and work preferences (specific to the LaTeX template).</p>
                 <div className="form-group wb-floating-group">
@@ -1127,10 +1133,10 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                 {atsResult && !atsLoading && (
                   <div>
                     {/* Score display */}
-                    <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', textAlign: 'center' }}>
-                      <div style={{ fontWeight: 600, color: '#2d3748', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', fontSize: '1.25rem' }}>
-                        {atsResult.score >= 80 ? <CheckCircle size={24} color="#48bb78" /> : <AlertTriangle size={24} color={atsResult.score >= 50 ? '#ecc94b' : '#e53e3e'} />}
-                        ATS Score: <span style={{ color: atsResult.score >= 80 ? '#48bb78' : atsResult.score >= 50 ? '#ecc94b' : '#e53e3e', fontSize: '1.5rem', fontWeight: 800 }}>{atsResult.score} / 100</span>
+                    <div style={{ background: '#ffffff', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)', marginBottom: '1.5rem', textAlign: 'center' }}>
+                      <div style={{ fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', fontSize: '1.25rem' }}>
+                        {atsResult.score >= 80 ? <CheckCircle size={24} color="#10b981" /> : <AlertTriangle size={24} color={atsResult.score >= 50 ? '#f59e0b' : '#ef4444'} />}
+                        ATS Score: <span style={{ color: atsResult.score >= 80 ? '#10b981' : atsResult.score >= 50 ? '#f59e0b' : '#ef4444', fontSize: '1.5rem', fontWeight: 700 }}>{atsResult.score} / 100</span>
                       </div>
                     </div>
 
@@ -1143,11 +1149,13 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                           const isApplied = appliedSuggestions.has(i);
                           return (
                             <div key={i} style={{
-                              background: isApplied ? '#f0fff4' : '#fff',
-                              border: `1px solid ${isApplied ? '#c6f6d5' : '#e2e8f0'}`,
-                              borderRadius: '10px',
+                              background: isApplied ? '#f8fafc' : '#ffffff',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '8px',
+                              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                               marginBottom: '0.75rem',
-                              overflow: 'hidden'
+                              overflow: 'hidden',
+                              opacity: isApplied ? 0.7 : 1
                             }}>
                               <div
                                 onClick={() => !isApplied && setExpandedSuggestion(isExpanded ? null : i)}
@@ -1160,7 +1168,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                                   <p style={{ fontSize: '0.9rem', color: '#4a5568', margin: 0 }}>{sug.issue}</p>
                                 </div>
                                 {isApplied ? (
-                                  <span style={{ color: '#48bb78', fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem', whiteSpace: 'nowrap' }}>
+                                  <span style={{ color: '#10b981', fontWeight: 500, fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.25rem', whiteSpace: 'nowrap' }}>
                                     <Check size={14} /> Applied
                                   </span>
                                 ) : (
@@ -1169,19 +1177,20 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                               </div>
                               {isExpanded && !isApplied && (
                                 <div style={{ padding: '0 1rem 1rem', borderTop: '1px solid #edf2f7' }}>
-                                  <div style={{ fontSize: '0.75rem', color: '#a0aec0', fontWeight: 500, margin: '0.75rem 0 0.4rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Proposed change for {sug.field}:</div>
+                                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, margin: '0.75rem 0 0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Proposed change for {sug.field}:</div>
                                   <div style={{
-                                    background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px',
-                                    padding: '0.75rem', fontSize: '0.85rem', color: '#2d3748', lineHeight: 1.5,
-                                    maxHeight: '120px', overflowY: 'auto', marginBottom: '0.75rem'
+                                    background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px',
+                                    padding: '0.75rem', fontSize: '0.875rem', color: '#0f172a', lineHeight: 1.5,
+                                    maxHeight: '120px', overflowY: 'auto', marginBottom: '1rem'
                                   }}>
                                     {sug.replacement}
                                   </div>
                                   <button
                                     onClick={(e) => { e.stopPropagation(); applySuggestion(sug, i); setExpandedSuggestion(null); }}
                                     style={{
-                                      background: '#e31b4b', color: '#fff', border: 'none', borderRadius: '8px',
-                                      padding: '0.5rem 1.25rem', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600
+                                      background: '#0f172a', color: '#f8fafc', border: 'none', borderRadius: '6px',
+                                      padding: '0.5rem 1rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 500,
+                                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
                                     }}
                                   >
                                     Apply this change
@@ -1202,13 +1211,16 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
                     )}
 
                     {/* Re-check button */}
-                    <div style={{ textAlign: 'center' }}>
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                       <button
-                        className="wb-add-link"
                         onClick={analyzeAts}
-                        style={{ fontSize: '0.9rem' }}
+                        style={{
+                          background: '#ffffff', border: '1px solid #e2e8f0', color: '#0f172a', borderRadius: '6px',
+                          padding: '0.5rem 1rem', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer',
+                          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                        }}
                       >
-                        Re-check Score
+                        Re-evaluate Score
                       </button>
                     </div>
                   </div>

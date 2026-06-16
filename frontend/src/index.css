@@ -1373,7 +1373,7 @@ body {
 }
 
 .wb-step:hover .wb-step-node {
-  opacity: 0.8;
+  border-color: hsl(var(--primary) / 0.5);
 }
 
 .wb-step-name {
@@ -1410,7 +1410,7 @@ body {
   height: 28px;
   border-radius: 50%;
   background: hsl(var(--background));
-  border: 2px solid hsl(var(--border));
+  border: 1px solid hsl(var(--border));
   color: transparent;
   display: flex;
   align-items: center;
@@ -1427,7 +1427,7 @@ body {
   width: 28px;
   height: 28px;
   background: hsl(var(--primary));
-  border: 2px solid hsl(var(--primary));
+  border: 1px solid hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   box-shadow: none;
 }
@@ -1441,11 +1441,11 @@ body {
 /* Vertical connecting line */
 .wb-step-line {
   position: absolute;
-  top: 14px;
+  top: 28px;
   left: 50%;
   transform: translateX(-50%);
   width: 1px;
-  height: calc(100% + 2.2rem);
+  height: 2.2rem;
   background: hsl(var(--border));
   z-index: 1;
   transition: all 0.3s ease;

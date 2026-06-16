@@ -5,9 +5,14 @@ import { GoogleGenAI } from '@google/genai';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import { createClient } from '@supabase/supabase-js';
 const require = createRequire(import.meta.url);
 const { PDFParse } = require('pdf-parse');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -18,13 +23,38 @@ app.use(cors());
 app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage() });
-let ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// Setup Supabase
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_KEY;
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+
+let ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'default' });
+
+async function initAI() {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('app_settings').select('value').eq('key', 'GEMINI_API_KEY').single();
+      if (data && data.value) {
+        process.env.GEMINI_API_KEY = data.value;
+      }
+    } catch (err) {
+      console.log('Could not fetch key from Supabase (table might not exist yet).');
+    }
+  }
+  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+}
+initAI();
+
+// Serve frontend static files
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendDistPath));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running' });
 });
 
-app.post('/api/admin/update-key', (req, res) => {
+app.post('/api/admin/update-key', async (req, res) => {
   const { password, apiKey } = req.body;
   const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
   if (!password || password !== expectedPassword) {
@@ -35,24 +65,29 @@ app.post('/api/admin/update-key', (req, res) => {
   }
 
   try {
+    if (supabase) {
+      const { error } = await supabase.from('app_settings').upsert({ key: 'GEMINI_API_KEY', value: apiKey });
+      if (error) throw new Error('Supabase error: ' + error.message);
+    }
+
     ai = new GoogleGenAI({ apiKey });
     process.env.GEMINI_API_KEY = apiKey;
 
     const envPath = path.resolve('.env');
-    let envContent = fs.readFileSync(envPath, 'utf8');
-    
-    if (envContent.includes('GEMINI_API_KEY=')) {
-      envContent = envContent.replace(/GEMINI_API_KEY=.*/g, `GEMINI_API_KEY=${apiKey}`);
-    } else {
-      envContent += `\nGEMINI_API_KEY=${apiKey}`;
+    if (fs.existsSync(envPath)) {
+      let envContent = fs.readFileSync(envPath, 'utf8');
+      if (envContent.includes('GEMINI_API_KEY=')) {
+        envContent = envContent.replace(/GEMINI_API_KEY=.*/g, `GEMINI_API_KEY=${apiKey}`);
+      } else {
+        envContent += `\nGEMINI_API_KEY=${apiKey}`;
+      }
+      fs.writeFileSync(envPath, envContent);
     }
-    
-    fs.writeFileSync(envPath, envContent);
 
-    res.json({ success: true, message: 'API Key updated successfully' });
+    res.json({ success: true, message: 'API Key updated successfully (saved to DB if configured)!' });
   } catch (err) {
     console.error('Error updating API key:', err);
-    res.status(500).json({ error: 'Failed to update API key' });
+    res.status(500).json({ error: 'Failed to update API key: ' + err.message });
   }
 });
 
@@ -234,6 +269,10 @@ Rules:
     console.error('Error analyzing ATS:', error);
     res.status(500).json({ error: 'Failed to analyze resume' });
   }
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
 app.listen(port, () => {

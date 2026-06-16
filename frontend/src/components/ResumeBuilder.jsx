@@ -247,8 +247,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
         const formData = new FormData();
         formData.append('filecontents', texString);
 
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-        const response = await fetch(`${backendUrl}/api/compile-latex`, {
+        const response = await fetch('/api/compile-latex', {
           method: 'POST',
           body: formData
         });
@@ -336,8 +335,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
     setAppliedSuggestions(new Set());
     setExpandedSuggestion(null);
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-      const response = await fetch(`${backendUrl}/api/analyze-ats`, {
+      const response = await fetch('/api/analyze-ats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeData })
@@ -458,8 +456,7 @@ export default function ResumeBuilder({ session, initialTemplate, initialData, i
   const enhanceDescription = async (id, currentTitle, currentDesc) => {
     setAiLoading(id);
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-      const response = await fetch(`${backendUrl}/api/generate-bullet`, {
+      const response = await fetch('/api/generate-bullet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobTitle: currentTitle, description: currentDesc })

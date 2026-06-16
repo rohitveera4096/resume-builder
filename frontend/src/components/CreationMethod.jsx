@@ -23,8 +23,7 @@ export default function CreationMethod({ onMethodSelect }) {
     formData.append('resume', file);
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-      const res = await fetch(`${backendUrl}/api/parse-resume`, {
+      const res = await fetch('/api/parse-resume', {
         method: 'POST',
         body: formData
       });
